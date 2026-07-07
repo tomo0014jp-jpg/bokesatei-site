@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="13" fill="#14110f"/>
+  <rect x="7" y="7" width="50" height="50" rx="9" fill="#c0392b"/>
+  <text x="32" y="45" text-anchor="middle" font-family="'Yu Mincho','Hiragino Mincho ProN','Noto Serif JP',serif" font-weight="700" font-size="38" fill="#ece3d3">査</text>
+</svg>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIボケ査定 — 辛口の銀次が、お前さんの笑いを査定する</title>
+<meta name="description" content="毎日ひとつの大喜利お題に回答すると、毒舌AI査定人「辛口の銀次」が0〜100点で採点。低得点の悔しさと激レア高得点で今日も一句。">
+<link rel="canonical" href="https://bokesatei.com/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AIボケ査定｜辛口の銀次が、お前さんの笑いを査定する">
+<meta property="og:description" content="毎日ひとつの大喜利お題を、毒舌AI査定人が0〜100点で斬る。">
+<meta property="og:image" content="https://bokesatei.com/assets/ogp.png">
+<meta property="og:url" content="https://bokesatei.com/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{--ink:#14110f;--ink2:#1c1815;--paper:#ece3d3;--sumi:#d8cbb3;--shu:#c0392b;--shu-l:#e0503f;--gold:#cda349;--muted:#8a8073;--line:rgba(216,203,179,.16)}
+  *{box-sizing:border-box}html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--paper);font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;-webkit-font-smoothing:antialiased;line-height:1.8}
+  a{color:var(--gold);text-decoration:none}
+  .wrap{max-width:680px;margin:0 auto;padding:0 20px}
+  /* hero */
+  .hero{text-align:center;padding:56px 20px 40px;border-bottom:1px solid var(--line)}
+  .logo{font-size:40px;font-weight:700;letter-spacing:.14em}.logo .shu{color:var(--shu-l)}
+  .rule{width:120px;height:2px;background:var(--gold);margin:22px auto}
+  .lead{font-size:17px;color:var(--sumi);letter-spacing:.04em;margin:0 auto;max-width:30em}
+  .cta{display:inline-block;margin-top:28px;padding:14px 30px;background:var(--shu);color:#fff;border-radius:10px;font-size:17px;font-weight:700;letter-spacing:.08em}
+  .cta.sub{background:transparent;color:var(--gold);border:1px solid var(--line);padding:12px 24px;font-size:15px;font-weight:400}
+  .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+  .cta-row .cta{margin-top:0}
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:20px;letter-spacing:.08em;text-align:center;margin:0 0 6px;font-weight:700}
+  .sec-note{text-align:center;color:var(--muted);font-size:13px;margin:0 0 24px}
+  /* latest */
+  #latest .card{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:22px 20px;text-align:center}
+  #latest .l-date{color:var(--muted);font-size:13px;letter-spacing:.1em}
+  #latest .l-odai{font-size:19px;font-weight:700;margin:8px 0 4px;word-break:break-word}
+  #latest .l-top{color:var(--gold);font-size:14px;margin-bottom:16px}
+  #latest .l-link{display:inline-block;padding:10px 22px;border:1px solid var(--gold);border-radius:999px;font-size:14px}
+  #latest .l-skel{color:var(--muted);font-size:14px}
+  /* steps */
+  .steps{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:560px){.steps{grid-template-columns:repeat(3,1fr)}}
+  .step{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:18px 16px;text-align:center}
+  .step .n{color:var(--shu-l);font-size:13px;letter-spacing:.2em}
+  .step .t{font-size:16px;font-weight:700;margin:8px 0 6px}
+  .step .d{font-size:13px;color:var(--muted);line-height:1.7}
+  /* ginji */
+  .ginji{display:flex;gap:16px;align-items:flex-start;background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .ginji .seal{flex:0 0 60px;height:60px;border-radius:12px;background:var(--shu);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff}
+  .ginji .g-body .g-name{font-size:16px;font-weight:700}.ginji .g-body .g-sub{color:var(--muted);font-size:12px;margin-bottom:8px}
+  .ginji .g-body p{margin:0;font-size:14px;color:var(--sumi);line-height:1.8}
+  .quote{margin-top:14px;color:var(--gold);font-size:14px;text-align:center;line-height:2}
+  footer{text-align:center;padding:34px 20px 48px;color:var(--muted);font-size:12px;letter-spacing:.08em;border-bottom:none}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="logo">AI<span class="shu">ボケ</span>査定</div>
+    <div class="rule"></div>
+    <p class="lead">毎日ひとつの大喜利お題に一句。毒舌AI査定人「辛口の銀次」が、お前さんの笑いを0〜100点で査定する。</p>
+    <div class="cta-row">
+      <a class="cta" id="playTop" href="#">今日のお題に挑戦 →</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section id="latest">
+      <h2>最新の番付</h2>
+      <p class="sec-note">昨日のお題の結果が出てるよ</p>
+      <div class="card" id="latestCard">
+        <p class="l-skel">番付を持ってくるよ……</p>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>遊び方</h2>
+      <p class="sec-note">たった3ステップ。登録も要らねえ</p>
+      <div class="steps">
+        <div class="step"><div class="n">STEP 1</div><div class="t">お題に答える</div><div class="d">毎日12:00に出るお題へ、24:00までに一句。1日1回、誰でも無料。</div></div>
+        <div class="step"><div class="n">STEP 2</div><div class="t">銀次が査定</div><div class="d">深夜、辛口の銀次が0〜100点で採点。称号と講評つき。甘くはねえよ。</div></div>
+        <div class="step"><div class="n">STEP 3</div><div class="t">結果をシェア</div><div class="d">翌12:00に発表。縦書きの査定カードでSNSに晒しな。</div></div>
+      </div>
+    </section>
+
+    <section id="ginji">
+      <h2>査定人「辛口の銀次」</h2>
+      <p class="sec-note">笑いを質草に取る、元・質屋の大番頭</p>
+      <div class="ginji">
+        <div class="seal">査</div>
+        <div class="g-body">
+          <div class="g-name">辛口の銀次（からくちのぎんじ）</div>
+          <div class="g-sub">江戸っ子べらんめえ口調・一人称「あたし」</div>
+          <p>「ほう、持ってきたのはこれかい。……値札も付かねえよ。」良いものは滅多にねえが、本物にはちゃんと頭を下げる。毒は作品にだけ向ける、それが筋ってもんだ。</p>
+        </div>
+      </div>
+      <p class="quote">「フッ……参った。こいつは蔵から出てきた千両箱だ。」</p>
+    </section>
+
+    <div class="cta-row" style="padding:8px 0 40px">
+      <a class="cta" id="playBottom" href="#">今日のお題に挑戦 →</a>
+    </div>
+  </div>
+
+  <footer>
+    AIボケ査定 &nbsp;/&nbsp; bokesatei.com<br>
+    無料・登録なし・1日1投稿。毎日ひとつ、大喜利を。
+  </footer>
+
+  <script>
+    // 道場(GAS Web App)への遷移先。シェア導線ではなくプレイ入口。
+    var DOJO_URL = 'https://script.google.com/macros/s/AKfycbwyLWBVRdUi1pvakJhCutiLT5uYllk8RN0_rlRkJGkqgfvxO7-OR3dSosuNHe53ooPS/exec';
+    document.getElementById('playTop').href = DOJO_URL;
+    document.getElementById('playBottom').href = DOJO_URL;
+
+    // 最新発表(latest.json)。未生成/空/取得失敗でも壊れないフォールバック(要件①)。
+    (function () {
+      var card = document.getElementById('latestCard');
+      function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = String(text); return e; }
+      function fallback() {
+        card.innerHTML = '';
+        card.appendChild(el('p', 'l-odai', '最初の発表をお楽しみに'));
+        card.appendChild(el('p', 'l-skel', 'まずは今日のお題に挑んでみな。結果は翌12:00にここへ。'));
+      }
+      function render(d) {
+        // /r/日付/ に統一(要件⑥)。ユーザー由来テキストは textContent で挿入(XSS対策)。
+        card.innerHTML = '';
+        card.appendChild(el('div', 'l-date', d.date + ' のお題'));
+        card.appendChild(el('div', 'l-odai', d.odai || ''));
+        if (d.top_score != null && d.top_score !== '') card.appendChild(el('div', 'l-top', '最高得点 ' + Number(d.top_score) + ' 点'));
+        var a = el('a', 'l-link', '結果と全講評を見る →');
+        a.href = '/r/' + encodeURIComponent(d.date) + '/';
+        card.appendChild(a);
+      }
+      try {
+        fetch('/data/latest.json', { cache: 'no-store' })
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('http ' + r.status)); })
+          .then(function (d) { if (!d || !d.date) throw new Error('empty'); render(d); })
+          .catch(fallback);
+      } catch (e) { fallback(); }
+    })();
+  </script>
+</body>
+</html>
