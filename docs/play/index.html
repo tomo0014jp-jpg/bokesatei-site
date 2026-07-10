@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AIボケ査定 道場</title>
+<!-- P1(移行期間): まだどこからもリンクせず、検索にも出さない。導線切替(P3)で外す -->
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --ink: #14110f; --ink2: #211d1a; --paper: #ece3d3; --sumi: #d8cbb3;
+    --shu: #c0392b; --shu-l: #e0503f; --gold: #cda349; --muted: #8a8073;
+    --line: rgba(216, 203, 179, 0.16);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ink); color: var(--paper);
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px 16px 48px; }
+  header.brand { text-align: center; padding: 10px 0 6px; }
+  .brand .logo { font-size: 22px; letter-spacing: 0.18em; font-weight: 700; }
+  .brand .logo .shu { color: var(--shu-l); }
+  .brand .tag { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; margin-top: 3px; }
+
+  .tabs { display: flex; margin-top: 14px; border-bottom: 1px solid var(--line); }
+  .tab {
+    flex: 1; text-align: center; padding: 11px 4px; font-size: 13px; color: var(--muted);
+    background: none; border: none; font-family: inherit; cursor: pointer; letter-spacing: 0.04em;
+    border-bottom: 2px solid transparent;
+  }
+  .tab.active { color: var(--paper); border-bottom-color: var(--shu); }
+
+  .card { margin-top: 18px; background: var(--ink2); border: 1px solid var(--line); border-radius: 10px; padding: 20px 18px; }
+  .label { font-size: 12px; color: var(--muted); letter-spacing: 0.16em; }
+  .badge { display: inline-block; margin-top: 10px; padding: 3px 12px; font-size: 12px; color: var(--shu-l); border: 1px solid var(--shu); border-radius: 999px; letter-spacing: 0.08em; }
+  .odai { margin: 14px 0 6px; font-size: 23px; line-height: 1.7; font-weight: 700; letter-spacing: 0.03em; word-break: break-word; }
+  .msg { font-size: 16px; line-height: 1.9; color: var(--sumi); }
+  .ginji { margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .skeleton { color: var(--muted); font-size: 15px; }
+  .err { color: var(--shu-l); font-size: 13px; margin-top: 12px; }
+
+  .countdown { margin-top: 18px; padding-top: 14px; border-top: 1px dashed rgba(216,203,179,0.2); display: flex; align-items: baseline; gap: 8px; }
+  .countdown .cd-label { font-size: 12px; color: var(--muted); letter-spacing: 0.1em; }
+  .countdown .cd-time { font-size: 20px; color: var(--shu-l); font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+
+  .form { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px; }
+  .field input, .field textarea { width: 100%; background: #17130f; color: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 16px; line-height: 1.6; }
+  .field textarea { resize: vertical; min-height: 84px; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--shu); }
+  .counter { text-align: right; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .counter.over { color: var(--shu-l); }
+  .submit { width: 100%; padding: 13px; margin-top: 4px; background: var(--shu); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; }
+  .submit:disabled { background: #5a3a35; color: #cbb; cursor: not-allowed; }
+  .form-err { color: var(--shu-l); font-size: 13px; margin-top: 12px; line-height: 1.6; min-height: 1em; }
+  .form-warn { color: var(--gold); font-size: 13px; margin-top: 8px; line-height: 1.6; }
+  .success { font-size: 16px; line-height: 1.9; color: var(--sumi); }
+
+  .rk-head { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .rk-odai { font-size: 15px; color: var(--sumi); margin: 6px 0 14px; line-height: 1.6; }
+  .rk-item { padding: 12px 0; border-top: 1px solid var(--line); display: flex; gap: 12px; }
+  .rk-rank { flex: 0 0 34px; text-align: center; font-size: 18px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .rk-rank.top1 { color: var(--gold); } .rk-rank.top2 { color: #cfd3d6; } .rk-rank.top3 { color: #c8895a; }
+  .rk-body { flex: 1; min-width: 0; }
+  .rk-line1 { display: flex; align-items: baseline; gap: 8px; }
+  .rk-nick { font-size: 13px; color: var(--muted); }
+  .rk-score { margin-left: auto; font-size: 17px; font-weight: 700; }
+  .rk-title { font-size: 11px; color: var(--gold); }
+  .rk-text { font-size: 15px; line-height: 1.6; margin: 4px 0; word-break: break-word; }
+  .rk-comment { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .rk-foot { margin-top: 16px; text-align: center; font-size: 12px; color: var(--muted); }
+  .rk-foot a { color: var(--gold); text-decoration: none; }
+
+  .me-score { text-align: center; margin: 8px 0; }
+  .me-score .num { font-size: 68px; font-weight: 700; line-height: 1; letter-spacing: 0.02em; }
+  .me-score .unit { font-size: 20px; color: var(--muted); }
+  .me-title { text-align: center; font-size: 18px; color: var(--gold); margin-bottom: 4px; }
+  .me-comment { text-align: center; font-size: 15px; color: var(--sumi); line-height: 1.8; margin: 12px 0; }
+  .me-meta { display: flex; justify-content: center; gap: 20px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .me-meta b { color: var(--paper); font-size: 16px; }
+  .me-your { font-size: 13px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+  .me-best { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(216,203,179,0.2); font-size: 13px; color: var(--muted); text-align: center; }
+
+  .share-wrap { margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(216,203,179,0.2); text-align: center; }
+  .share-btn { width: 100%; padding: 13px; background: var(--gold); color: #14110f; border: none; border-radius: 8px; font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; }
+  .share-btn:disabled { opacity: 0.6; cursor: default; }
+  .share-note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+  .share-preview { display: block; margin: 14px auto 0; max-width: 240px; width: 100%; border-radius: 8px; border: 1px solid var(--line); }
+
+  footer { margin-top: 26px; text-align: center; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+  footer a { color: var(--muted); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="brand">
+    <div class="logo">AI<span class="shu">ボケ</span>査定</div>
+    <div class="tag">辛口の銀次が、お前さんの笑いを査定する</div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" id="tab-today" type="button">今日のお題</button>
+    <button class="tab" id="tab-ranking" type="button">昨日の番付</button>
+    <button class="tab" id="tab-me" type="button">お前さんの結果</button>
+  </nav>
+
+  <main>
+    <section id="panel-today">
+      <div class="card"><div class="label">本日のお題</div>
+        <div id="todayBody"><p class="skeleton">仕込み中……少々お待ちを。</p></div>
+      </div>
+      <div class="err" id="todayErr" style="display:none;"></div>
+    </section>
+
+    <section id="panel-ranking" style="display:none;">
+      <div class="card" id="rankingBody"><p class="skeleton">番付を持ってくるよ……</p></div>
+    </section>
+
+    <section id="panel-me" style="display:none;">
+      <div class="card" id="meBody"><p class="skeleton">お前さんの査定を探すよ……</p></div>
+    </section>
+  </main>
+
+  <footer><a href="/">AIボケ査定</a> &nbsp;/&nbsp; bokesatei.com</footer>
+</div>
+
+<script>
+  // ============================================================
+  // 道場(first-party)。SPEC 5 / 7.6
+  // GAS Web App を JSON API として fetch で叩く。localStorage は bokesatei.com のもの(=永続する)。
+  // ============================================================
+  var API_URL = 'https://script.google.com/macros/s/AKfycbwyLWBVRdUi1pvakJhCutiLT5uYllk8RN0_rlRkJGkqgfvxO7-OR3dSosuNHe53ooPS/exec';
+
+  var NICK_MAX = 12, TEXT_MAX = 60;
+  var READ_TIMEOUT = 10000, SUBMIT_TIMEOUT = 15000;
+  var cdTimer = null;
+  var rankingLoaded = false, meLoaded = false;
+
+  // ---- API層(SPEC 7.6) ----
+  // simple request 厳守: Content-Type は text/plain のみ、カスタムヘッダ禁止、credentials: 'omit'。
+  // GAS は OPTIONS を処理できないため、プリフライトを飛ばした時点で必ず失敗する。
+  // /exec は 302 で googleusercontent へ飛ぶので redirect は既定の 'follow' のまま。
+  function apiErr(kind, msg) { var e = new Error(msg || kind); e.kind = kind; return e; }
+
+  function apiPost(payload, timeoutMs) {
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeoutMs) : null;
+    var opts = {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      credentials: 'omit',
+      redirect: 'follow'
+    };
+    if (ctrl) opts.signal = ctrl.signal;
+
+    return fetch(API_URL, opts).then(function (res) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (!res.ok) throw apiErr('http', 'HTTP ' + res.status);
+      return res.text();
+    }).then(function (t) {
+      try { return JSON.parse(t); }
+      catch (e) { throw apiErr('parse', 'bad json'); }
+    }).catch(function (e) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (e && e.kind) throw e;
+      if (e && e.name === 'AbortError') throw apiErr('timeout', 'timeout');
+      throw apiErr('network', String((e && e.message) || e));
+    });
+  }
+
+  // 読み取り系: 1回だけ自動リトライ。submit には決して使わない(二重投稿防止)
+  function apiRead(action) {
+    return apiPost({ action: action }, READ_TIMEOUT).catch(function () {
+      return new Promise(function (r) { setTimeout(r, 1000); })
+        .then(function () { return apiPost({ action: action }, READ_TIMEOUT); });
+    });
+  }
+
+  function errMessage(e) {
+    var k = e && e.kind;
+    if (k === 'timeout') return '銀次が居眠りしてらぁ。もう一度声をかけな。';
+    if (k === 'network') return '表の通りが繋がらねえ。しばらくして出直しな。';
+    return '店の奥で何か落ちた音がした。少し待って出直しな。'; // http / parse / その他
+  }
+
+  // ---- localStorage(first-party なので振り直されない。SPEC 0.1) ----
+  function ensureUid() {
+    var uid = localStorage.getItem('bokesatei_uid');
+    if (!uid) {
+      var rnd = (self.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.floor(Math.random() * 16), v = c === 'x' ? r : (r & 0x3 | 0x8); return v.toString(16);
+          });
+      uid = 'u_' + rnd; localStorage.setItem('bokesatei_uid', uid);
+    }
+    return uid;
+  }
+  function getNick() { return localStorage.getItem('bokesatei_nick') || ''; }
+  function setNick(n) { localStorage.setItem('bokesatei_nick', n); }
+  function postedDate() { return localStorage.getItem('bokesatei_posted_date') || ''; }
+  function setPostedDate(d) { localStorage.setItem('bokesatei_posted_date', d); }
+  function charLen(s) { return Array.from(String(s || '')).length; }
+
+  // DOM ヘルパ(ユーザー生成テキストは textContent で挿入。SPEC 7.2)
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = String(text);
+    return e;
+  }
+
+  // ---- タブ ----
+  function showTab(name) {
+    ['today', 'ranking', 'me'].forEach(function (t) {
+      document.getElementById('tab-' + t).classList.toggle('active', t === name);
+      document.getElementById('panel-' + t).style.display = (t === name) ? 'block' : 'none';
+    });
+    if (name === 'ranking' && !rankingLoaded) { rankingLoaded = true; loadRanking(); }
+    if (name === 'me' && !meLoaded) { meLoaded = true; loadMyResult(); }
+  }
+  document.getElementById('tab-today').addEventListener('click', function () { showTab('today'); });
+  document.getElementById('tab-ranking').addEventListener('click', function () { showTab('ranking'); });
+  document.getElementById('tab-me').addEventListener('click', function () { showTab('me'); });
+
+  // ============================================================
+  // 今日のお題(5.1)+投稿(5.2)
+  // ============================================================
+  function renderToday(res) {
+    if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+    var body = document.getElementById('todayBody');
+    if (!res || !res.ok) { showTodayErr((res && res.error) || '通信に失敗したよ。'); return; }
+    body.innerHTML = '';
+
+    if (res.state === 'open') {
+      body.appendChild(el('span', 'badge', res.category || 'お題'));
+      body.appendChild(el('p', 'odai', res.odai_text || ''));
+      var cd = el('div', 'countdown');
+      cd.appendChild(el('span', 'cd-label', '締切まで'));
+      cd.appendChild(el('span', 'cd-time', '--:--:--')).id = 'cd';
+      body.appendChild(cd);
+      var area = el('div'); area.id = 'postArea'; body.appendChild(area);
+      startCountdown();
+      renderPostArea(res.date);
+    } else if (res.state === 'closed') {
+      body.appendChild(el('span', 'badge', res.category || 'お題'));
+      body.appendChild(el('p', 'odai', res.odai_text || ''));
+      body.appendChild(el('p', 'ginji', res.message || '本日の受付は締め切ったよ。'));
+    } else {
+      body.appendChild(el('p', 'msg', res.message || '本日のお題は12:00公開。仕込み中でぇ。'));
+    }
+  }
+
+  function renderPostArea(date) {
+    var area = document.getElementById('postArea');
+    if (!area) return;
+    if (postedDate() === date) {
+      var d = el('div', 'form'); d.appendChild(el('p', 'success', '本日は査定待ちだ。明日の昼に来な。'));
+      area.appendChild(d); return;
+    }
+    var form = el('div', 'form');
+    var f1 = el('div', 'field');
+    f1.appendChild(el('label', null, 'お名前(全角' + NICK_MAX + '字まで)'));
+    var nick = el('input'); nick.id = 'nick'; nick.type = 'text'; nick.autocomplete = 'off'; nick.placeholder = '銀次に名を告げな';
+    f1.appendChild(nick); f1.appendChild(el('div', 'counter', '')).id = 'nickCount';
+    var f2 = el('div', 'field');
+    f2.appendChild(el('label', null, 'お前さんの回答(全角' + TEXT_MAX + '字まで)'));
+    var ans = el('textarea'); ans.id = 'ans'; ans.placeholder = 'ここに一句、ひねり出しな';
+    f2.appendChild(ans); f2.appendChild(el('div', 'counter', '')).id = 'ansCount';
+    var btn = el('button', 'submit', 'この一句で査定を請う'); btn.id = 'submitBtn'; btn.type = 'button';
+    var ferr = el('div', 'form-err'); ferr.id = 'formErr';
+    form.appendChild(f1); form.appendChild(f2); form.appendChild(btn); form.appendChild(ferr);
+    area.appendChild(form);
+
+    nick.value = getNick();
+    updateNickCount(); updateAnsCount();
+    nick.addEventListener('input', updateNickCount);
+    ans.addEventListener('input', updateAnsCount);
+    btn.addEventListener('click', function () { submitPost(date); });
+  }
+  function updateNickCount() {
+    var n = charLen(document.getElementById('nick').value), e = document.getElementById('nickCount');
+    e.textContent = n + ' / ' + NICK_MAX; e.className = 'counter' + (n > NICK_MAX ? ' over' : '');
+  }
+  function updateAnsCount() {
+    var n = charLen(document.getElementById('ans').value), e = document.getElementById('ansCount');
+    e.textContent = '残り ' + (TEXT_MAX - n) + ' 字'; e.className = 'counter' + (n > TEXT_MAX ? ' over' : '');
+  }
+
+  function resetSubmitBtn() {
+    var btn = document.getElementById('submitBtn');
+    if (btn) { btn.disabled = false; btn.textContent = 'この一句で査定を請う'; }
+  }
+  function showSubmitSuccess(message, warn) {
+    var area = document.getElementById('postArea');
+    if (!area) return;
+    area.innerHTML = '';
+    var d = el('div', 'form');
+    d.appendChild(el('p', 'success', message || '確かに預かった。査定を待ちな。'));
+    if (warn) d.appendChild(el('p', 'form-warn', warn));
+    area.appendChild(d);
+  }
+
+  /**
+   * timeout/ネットワーク失敗時の着弾照合(SPEC 5.2)。
+   * 再送を許す前に me を叩き、当日分が既に着弾していれば成功画面に倒す。
+   * @return Promise<true|false|null>  true=着弾済 / false=未着弾 / null=照合不能
+   */
+  function reconcileSubmit(date) {
+    return apiPost({ action: 'me', uid: ensureUid() }, READ_TIMEOUT).then(function (r) {
+      if (!r || !r.ok) return null;
+      if (r.state !== 'none' && r.date === date) return true;  // 当日分が着弾している
+      return false;
+    }).catch(function () { return null; });
+  }
+
+  function submitPost(date) {
+    var btn = document.getElementById('submitBtn'), errEl = document.getElementById('formErr');
+    var nick = document.getElementById('nick').value.trim(), text = document.getElementById('ans').value;
+    errEl.textContent = '';
+    if (!nick) { errEl.textContent = '名を名乗りな。'; return; }
+    if (charLen(nick) > NICK_MAX) { errEl.textContent = '名は全角' + NICK_MAX + '字までだよ。'; return; }
+    if (!text.trim()) { errEl.textContent = '空っぽじゃ査定できねえ。'; return; }
+    if (charLen(text) > TEXT_MAX) { errEl.textContent = '長すぎらぁ。' + TEXT_MAX + '字までにしときな。'; return; }
+
+    btn.disabled = true; btn.textContent = '銀次に差し出し中……'; setNick(nick);
+
+    // submit は自動リトライしない(二重投稿防止。SPEC 5.2)
+    apiPost({ action: 'submit', uid: ensureUid(), nickname: nick, text: text }, SUBMIT_TIMEOUT)
+      .then(function (r) {
+        if (r && r.ok) {
+          setPostedDate(date); meLoaded = false;
+          showSubmitSuccess(r.message, r.warn);
+        } else {
+          resetSubmitBtn();
+          errEl.textContent = (r && r.error) ? r.error : '受け取れなかったよ。もう一度。';
+        }
+      })
+      .catch(function (e) {
+        // 通信が落ちた。再送を許す前に着弾を照合する(冪等性UX)
+        errEl.textContent = errMessage(e) + ' 着弾を確かめてる……';
+        return reconcileSubmit(date).then(function (landed) {
+          if (landed === true) {
+            setPostedDate(date); meLoaded = false;
+            showSubmitSuccess('確かに預かってた。査定は明日の昼、首を洗って待ちな。');
+          } else if (landed === false) {
+            resetSubmitBtn();
+            errEl.textContent = errMessage(e) + ' 届いてねえ。もう一度投げな。';
+          } else {
+            resetSubmitBtn();
+            errEl.textContent = errMessage(e) + ' 届いたか確かめられねえ。「お前さんの結果」を覗いてから投げ直しな。';
+          }
+        });
+      });
+  }
+
+  function startCountdown() {
+    function tick() {
+      var e = document.getElementById('cd');
+      if (!e) { if (cdTimer) clearInterval(cdTimer); return; }
+      var now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 24, 0, 0, 0);
+      var diff = Math.max(0, Math.floor((end - now) / 1000));
+      var h = String(Math.floor(diff / 3600)).padStart(2, '0');
+      var m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+      var s = String(diff % 60).padStart(2, '0');
+      e.textContent = h + ':' + m + ':' + s;
+    }
+    tick(); cdTimer = setInterval(tick, 1000);
+  }
+  function showTodayErr(msg) { var e = document.getElementById('todayErr'); e.textContent = msg; e.style.display = 'block'; }
+
+  // ============================================================
+  // 昨日の番付(5.3)
+  // ============================================================
+  function loadRanking() {
+    apiRead('ranking').then(renderRanking).catch(function (e) {
+      document.getElementById('rankingBody').textContent = errMessage(e);
+    });
+  }
+  function renderRanking(res) {
+    var body = document.getElementById('rankingBody'); body.innerHTML = '';
+    if (!res || !res.ok) { body.appendChild(el('p', 'msg', (res && res.error) || '番付が取れなかったよ。')); return; }
+    if (res.state !== 'ranking') { body.appendChild(el('p', 'msg', res.message || 'まだ発表はねえ。')); return; }
+
+    body.appendChild(el('div', 'label', res.date + ' の番付'));
+    body.appendChild(el('div', 'rk-odai', 'お題: ' + (res.odai_text || '')));
+    if (!res.ranking.length) {
+      body.appendChild(el('p', 'msg', '本日は挑戦者ゼロ。腰抜けばかりかい。'));
+    } else {
+      res.ranking.forEach(function (r) {
+        var item = el('div', 'rk-item');
+        var rk = el('div', 'rk-rank' + (r.rank <= 3 ? ' top' + r.rank : ''), r.rank);
+        var b = el('div', 'rk-body');
+        var l1 = el('div', 'rk-line1');
+        l1.appendChild(el('span', 'rk-nick', r.nickname));
+        l1.appendChild(el('span', 'rk-score', r.score + '点'));
+        b.appendChild(l1);
+        b.appendChild(el('div', 'rk-title', r.title));
+        b.appendChild(el('div', 'rk-text', r.text));
+        if (r.comment) b.appendChild(el('div', 'rk-comment', '銀次「' + r.comment + '」'));
+        item.appendChild(rk); item.appendChild(b);
+        body.appendChild(item);
+      });
+    }
+    body.appendChild(el('div', 'rk-foot', '参加者 ' + res.participants + ' 名 ／ 平均 ' + res.avg_score + ' 点'));
+    var foot = el('div', 'rk-foot');
+    var a = el('a', null, '全結果と講評は発表ページで →');
+    a.href = '/r/' + encodeURIComponent(res.date) + '/';
+    foot.appendChild(a);
+    body.appendChild(foot);
+  }
+
+  // ============================================================
+  // お前さんの結果(5.4)
+  // ============================================================
+  function loadMyResult() {
+    apiPost({ action: 'me', uid: ensureUid() }, READ_TIMEOUT)
+      .then(renderMyResult)
+      .catch(function (e) { document.getElementById('meBody').textContent = errMessage(e); });
+  }
+  function renderMyResult(res) {
+    var body = document.getElementById('meBody'); body.innerHTML = '';
+    if (!res || !res.ok) { body.appendChild(el('p', 'msg', (res && res.error) || '結果が取れなかったよ。')); return; }
+
+    if (res.state === 'none') {
+      body.appendChild(el('p', 'msg', res.message || 'まだ投げてねえな。'));
+    } else if (res.state === 'pending') {
+      body.appendChild(el('div', 'label', res.date + ' のお前さんの一句'));
+      body.appendChild(el('p', 'rk-text', res.text || ''));
+      body.appendChild(el('p', 'msg', res.message || '銀次が査定中……'));
+    } else if (res.state === 'hidden') {
+      body.appendChild(el('p', 'msg', res.message || 'この作品はお見せできない。'));
+    } else if (res.state === 'scored') {
+      body.appendChild(el('div', 'label', res.date + ' の査定'));
+      if (res.odai_text) body.appendChild(el('div', 'rk-odai', 'お題: ' + res.odai_text));
+      var sc = el('div', 'me-score');
+      var num = el('span', 'num', res.score); sc.appendChild(num); sc.appendChild(el('span', 'unit', '点'));
+      body.appendChild(sc);
+      body.appendChild(el('div', 'me-title', res.title || ''));
+      if (res.comment) body.appendChild(el('div', 'me-comment', '銀次「' + res.comment + '」'));
+      body.appendChild(el('div', 'me-your', 'お前さんの一句: ' + (res.text || '')));
+      var meta = el('div', 'me-meta');
+      var m1 = el('div'); m1.appendChild(document.createTextNode('順位 '));
+      m1.appendChild(el('b', null, res.rank != null ? res.rank + '位' : '—'));
+      var m2 = el('div'); m2.appendChild(document.createTextNode('参加 '));
+      m2.appendChild(el('b', null, res.participants + '名'));
+      meta.appendChild(m1); meta.appendChild(m2);
+      body.appendChild(meta);
+      if (!res.published) body.appendChild(el('p', 'ginji', '※ 正式発表は翌12:00。順位は暫定だよ。'));
+      renderShareSection(res, body);
+    }
+
+    if (res.best) {
+      body.appendChild(el('div', 'me-best', '自己ベスト ' + res.best.best_score + '点（' + res.best.best_date + '）'));
+    }
+  }
+
+  // ============================================================
+  // 縦書きシェアカード(5.5)。src/index.html から無改変で移設。
+  // ============================================================
+  var SHARE_FONT = '"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif';
+  var VERT_ROTATE = 'ーｰ－-—―〜~（）()「」『』【】〔〕［］[]｛｝{}〈〉《》＜＞<>…‥';
+  var VERT_SHIFT = '、。，．';
+
+  function shareUrl(date) { return 'https://bokesatei.com/r/' + date + '/'; }
+  function shareText(res) {
+    return '本日の査定:' + res.score + '点「' + (res.title || '') + '」。悔しかったらお前さんもやってみな。 '
+      + shareUrl(res.date) + ' #AIボケ査定';
+  }
+
+  function renderShareSection(res, body) {
+    var wrap = el('div', 'share-wrap');
+    var btn = el('button', 'share-btn', '銀次の査定をシェアする'); btn.type = 'button';
+    var note = el('div', 'share-note');
+    wrap.appendChild(btn); wrap.appendChild(note); body.appendChild(wrap);
+    btn.addEventListener('click', function () { doShare(res, wrap, btn, note); });
+  }
+
+  function doShare(res, wrap, btn, note) {
+    btn.disabled = true;
+    note.textContent = '査定書をしたためてる……';
+    var canvas;
+    try {
+      canvas = buildShareCard(res);
+    } catch (e) {
+      btn.disabled = false; note.textContent = 'カードを描けなかったよ: ' + (e && e.message ? e.message : e); return;
+    }
+    var old = wrap.querySelector('.share-preview'); if (old) old.remove();
+    var img = el('img', 'share-preview'); img.alt = 'シェアカード'; img.src = canvas.toDataURL('image/png');
+    wrap.appendChild(img);
+
+    var text = shareText(res), fname = 'bokesatei_' + res.date + '.png';
+    var done = function () { btn.disabled = false; };
+    canvas.toBlob(function (blob) {
+      if (!blob) { note.textContent = '画像化に失敗したよ。長押しで保存しな。'; done(); return; }
+      var file = null;
+      try { file = new File([blob], fname, { type: 'image/png' }); } catch (e) { file = null; }
+      if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+        navigator.share({ files: [file], text: text })
+          .then(function () { note.textContent = '粋だね。しっかり広めときな。'; })
+          .catch(function () { note.textContent = 'シェアは見送ったかい。画像は上に出してある。'; })
+          .then(done);
+      } else {
+        try {
+          var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+        } catch (e) {}
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text)
+            .then(function () { note.textContent = '画像を保存し、シェア文もコピーしといたよ。貼って広めな。'; })
+            .catch(function () { note.textContent = '画像を保存したよ。シェア文はこれだ: ' + text; })
+            .then(done);
+        } else {
+          note.textContent = '画像を保存したよ。シェア文はこれだ: ' + text; done();
+        }
+      }
+    }, 'image/png');
+  }
+
+  function bsRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  function bsWrapLines(ctx, text, maxW) {
+    var chars = Array.from(String(text || '')), line = '', lines = [];
+    for (var i = 0; i < chars.length; i++) {
+      var test = line + chars[i];
+      if (line && ctx.measureText(test).width > maxW) { lines.push(line); line = chars[i]; }
+      else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function bsDrawVChar(ctx, ch, cx, cy, fs) {
+    if (VERT_ROTATE.indexOf(ch) >= 0) {
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.PI / 2); ctx.fillText(ch, 0, 0); ctx.restore();
+    } else if (VERT_SHIFT.indexOf(ch) >= 0) {
+      ctx.fillText(ch, cx + fs * 0.46, cy - fs * 0.50);
+    } else {
+      ctx.fillText(ch, cx, cy);
+    }
+  }
+
+  var KINSOKU_NO_START = '、。，．・：；！？）］｝〕】〉》」』ゝゞ々ーｰ—―〜～…‥ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮ';
+  var KINSOKU_NO_END = '（［｛〔【〈《「『(';
+  var PUNCT = '、。！？';
+
+  function bsColumns(chars, maxPer) {
+    var n = chars.length, p, hasPunct = false;
+    for (p = 0; p < n; p++) { if (PUNCT.indexOf(chars[p]) >= 0) { hasPunct = true; break; } }
+    var target = hasPunct ? maxPer : Math.ceil(n / Math.max(1, Math.ceil(n / maxPer)));
+    var out = [], i = 0;
+    while (i < n) {
+      var end = Math.min(i + target, n);
+      while (end < n && (end - i) < maxPer + 1 && KINSOKU_NO_START.indexOf(chars[end]) >= 0) end++;
+      if (end - 1 > i && KINSOKU_NO_END.indexOf(chars[end - 1]) >= 0) end--;
+      out.push(chars.slice(i, end)); i = end;
+    }
+    return out;
+  }
+
+  function bsDrawVertical(ctx, text, centerX, top, availH, availW, baseFs, color) {
+    var chars = Array.from(String(text || ''));
+    if (!chars.length) return;
+    var fs = baseFs, charH, maxPer, columns, maxLen, colW, c;
+    while (fs > 24) {
+      charH = fs * 1.18; maxPer = Math.max(1, Math.floor(availH / charH));
+      columns = bsColumns(chars, maxPer); colW = fs * 1.42;
+      maxLen = 0; for (c = 0; c < columns.length; c++) if (columns[c].length > maxLen) maxLen = columns[c].length;
+      if (columns.length * colW <= availW && maxLen * charH <= availH + charH) break;
+      fs -= 2;
+    }
+    charH = fs * 1.18; colW = fs * 1.42;
+    var totalW = columns.length * colW, rightX = centerX + totalW / 2 - colW / 2;
+    var blockTop = top + (availH - maxLen * charH) / 2;
+    ctx.font = fs + 'px ' + SHARE_FONT; ctx.fillStyle = color;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (c = 0; c < columns.length; c++) {
+      var col = columns[c], colX = rightX - c * colW;
+      for (var k = 0; k < col.length; k++) bsDrawVChar(ctx, col[k], colX, blockTop + charH * (k + 0.5), fs);
+    }
+  }
+
+  function buildShareCard(res) {
+    var W = 1080, H = 1350, cx = W / 2;
+    var C = { ink: '#14110f', panel: '#211d1a', paper: '#ece3d3', sumi: '#d8cbb3',
+      shu: '#c0392b', shuL: '#e0503f', gold: '#cda349', muted: '#8a8073' };
+    var canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(205,163,73,0.38)'; ctx.lineWidth = 2;
+    bsRoundRect(ctx, 40, 40, W - 80, H - 80, 18); ctx.stroke();
+    ctx.strokeStyle = 'rgba(205,163,73,0.16)'; ctx.lineWidth = 1;
+    bsRoundRect(ctx, 52, 52, W - 104, H - 104, 14); ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = C.muted; ctx.font = '26px ' + SHARE_FONT; ctx.textBaseline = 'alphabetic';
+    ctx.fillText(res.date + ' の査定', cx, 128);
+
+    ctx.font = 'bold 46px ' + SHARE_FONT;
+    var segs = [['AI', C.paper], ['ボケ', C.shuL], ['査定', C.paper]];
+    var totalBrand = 0, s;
+    for (s = 0; s < segs.length; s++) totalBrand += ctx.measureText(segs[s][0]).width;
+    var bx = cx - totalBrand / 2; ctx.textAlign = 'left';
+    for (s = 0; s < segs.length; s++) {
+      ctx.fillStyle = segs[s][1]; ctx.fillText(segs[s][0], bx, 200); bx += ctx.measureText(segs[s][0]).width;
+    }
+    ctx.textAlign = 'center';
+    ctx.strokeStyle = C.gold; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx - 60, 228); ctx.lineTo(cx + 60, 228); ctx.stroke();
+
+    ctx.fillStyle = C.muted; ctx.font = '24px ' + SHARE_FONT;
+    ctx.fillText('お  題', cx, 296);
+    ctx.fillStyle = C.sumi; ctx.font = '36px ' + SHARE_FONT;
+    var odaiLines = bsWrapLines(ctx, res.odai_text || '', W - 220);
+    if (odaiLines.length > 3) { odaiLines = odaiLines.slice(0, 3); odaiLines[2] = odaiLines[2].slice(0, -1) + '…'; }
+    for (var oi = 0; oi < odaiLines.length; oi++) ctx.fillText(odaiLines[oi], cx, 346 + oi * 52);
+
+    var ansTop = 346 + (odaiLines.length - 1) * 52 + 40;
+    bsDrawVertical(ctx, res.text || '', cx, ansTop, 864 - ansTop, W - 200, 58, C.paper);
+
+    var numStr = String(res.score), tenStr = '点';
+    ctx.textBaseline = 'alphabetic';
+    ctx.font = 'bold 190px ' + SHARE_FONT; var numW = ctx.measureText(numStr).width;
+    ctx.font = '58px ' + SHARE_FONT; var tenW = ctx.measureText(tenStr).width;
+    var gap = 14, groupW = numW + gap + tenW, gx = cx - groupW / 2, baseY = 1030;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = C.paper; ctx.font = 'bold 190px ' + SHARE_FONT; ctx.fillText(numStr, gx, baseY);
+    ctx.fillStyle = C.muted; ctx.font = '58px ' + SHARE_FONT; ctx.fillText(tenStr, gx + numW + gap, baseY);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = C.gold; ctx.font = '46px ' + SHARE_FONT;
+    ctx.fillText('「' + (res.title || '') + '」', cx, 1092);
+
+    if (res.comment) {
+      ctx.fillStyle = C.sumi; ctx.font = '32px ' + SHARE_FONT;
+      var cmLines = bsWrapLines(ctx, '銀次「' + res.comment + '」', W - 200);
+      var cy0 = 1170 - (cmLines.length - 1) * 22;
+      for (var ci = 0; ci < cmLines.length; ci++) ctx.fillText(cmLines[ci], cx, cy0 + ci * 44);
+    }
+
+    ctx.fillStyle = C.shu; bsRoundRect(ctx, cx - 210, 1236, 40, 40, 8); ctx.fill();
+    ctx.fillStyle = C.paper; ctx.font = 'bold 24px ' + SHARE_FONT;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('査', cx - 190, 1257);
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = C.muted; ctx.font = '26px ' + SHARE_FONT; ctx.textAlign = 'left';
+    ctx.fillText('AIボケ査定 / bokesatei.com', cx - 150, 1266);
+    ctx.textAlign = 'left';
+    return canvas;
+  }
+
+  // ---- 起動 ----
+  function load() {
+    ensureUid();
+    apiRead('today').then(renderToday).catch(function (e) { showTodayErr(errMessage(e)); });
+  }
+  load();
+</script>
+</body>
+</html>
