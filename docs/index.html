@@ -110,8 +110,8 @@
   </footer>
 
   <script>
-    // 道場(GAS Web App)への遷移先。シェア導線ではなくプレイ入口。
-    var DOJO_URL = 'https://script.google.com/macros/s/AKfycbwyLWBVRdUi1pvakJhCutiLT5uYllk8RN0_rlRkJGkqgfvxO7-OR3dSosuNHe53ooPS/exec';
+    // 道場(first-party /play/)への遷移先。GAS URLは出さない(SPEC 0.1)。
+    var DOJO_URL = '/play/';
     document.getElementById('playTop').href = DOJO_URL;
     document.getElementById('playBottom').href = DOJO_URL;
 
