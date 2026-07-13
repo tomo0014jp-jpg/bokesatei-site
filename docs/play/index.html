@@ -429,6 +429,17 @@
 
     if (res.state === 'none') {
       body.appendChild(el('p', 'msg', res.message || 'まだ投げてねえな。'));
+      // 補足: state:'none' は「この記名札(uid)に投稿ゼロ」の意。別端末/別ブラウザ/
+      // ストレージ削除・Safari ITP で uid が変わると 'none' になり得る(仕様。SPEC 5.4)。
+      body.appendChild(el('p', 'ginji',
+        '心当たりがあるのに出てこねえなら、別の端末・別ブラウザで投げたか、しばらく空けて記名札(uid)が変わったんだろう。番付は発表ページで確かめな。'));
+      // アプリ内タブ切替で番付へ誘導(外部URL不要)
+      var noneFoot = el('div', 'rk-foot');
+      var noneLink = el('a', null, '昨日の番付を見る →');
+      noneLink.href = '#';
+      noneLink.addEventListener('click', function (ev) { ev.preventDefault(); showTab('ranking'); });
+      noneFoot.appendChild(noneLink);
+      body.appendChild(noneFoot);
     } else if (res.state === 'pending') {
       body.appendChild(el('div', 'label', res.date + ' のお前さんの一句'));
       body.appendChild(el('p', 'rk-text', res.text || ''));
