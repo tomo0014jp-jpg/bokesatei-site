@@ -479,9 +479,16 @@
   }
 
   // ============================================================
-  // 縦書きシェアカード(5.5)。src/index.html から無改変で移設。
+  // 縦書きシェアカード(5.5)。canvas 描画で完結(明朝固定)。
   // ============================================================
-  var SHARE_FONT = '"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif';
+  // 注: canvas の縦書きレイアウト(bsDrawVertical/bsColumns)は fs・availH 等の数値のみで
+  // 決まり measureText 非依存 = フォントに依らず一定。D14 は canvas コードを一切変更して
+  // いない(pre-D14 と byte 一致)。回帰の唯一の差分は、D14 で追加した Web フォント読込に
+  // より SHARE_FONT 末尾の "Noto Serif JP" が「宣言済みだが非同期ロードの Web フォント」に
+  // 変わったこと。描画時に未ロードだと該当グリフが fallback/空白になり、縦書き句の描画が
+  // 崩れる。canvas は同期利用できるシステム明朝のみに限定し Web フォントに依存させない
+  // (= D14 前のフォント解決に戻す)。本文の --mincho とは意図的に別定義。
+  var SHARE_FONT = '"Hiragino Mincho ProN","Yu Mincho","YuMincho",serif';
   var VERT_ROTATE = 'ーｰ－-—―〜~（）()「」『』【】〔〕［］[]｛｝{}〈〉《》＜＞<>…‥';
   var VERT_SHIFT = '、。，．';
 
