@@ -8,6 +8,9 @@
 <link rel="canonical" href="https://bokesatei.com/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
 <meta property="og:type" content="website">
 <meta property="og:title" content="AIボケ査定｜AIが採点する大喜利。辛口の銀次が0〜100点で査定">
 <meta property="og:description" content="大喜利のボケをAIが0〜100点で採点する無料サービス。毎日12:00に一題、毒舌AI査定人「辛口の銀次」が講評つきで査定。">
@@ -28,16 +31,18 @@
 }
 </script>
 <style>
-  :root{--ink:#14110f;--ink2:#1c1815;--paper:#ece3d3;--sumi:#d8cbb3;--shu:#c0392b;--shu-l:#e0503f;--gold:#cda349;--muted:#8a8073;--line:rgba(216,203,179,.16)}
+  :root{--ink:#14110f;--ink2:#1c1815;--paper:#ece3d3;--sumi:#d8cbb3;--shu:#c0392b;--shu-l:#e0503f;--gold:#cda349;--muted:#a49a8a;--line:rgba(216,203,179,.16);--mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif}
   *{box-sizing:border-box}html,body{margin:0;padding:0}
-  body{background:var(--ink);color:var(--paper);font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP",serif;-webkit-font-smoothing:antialiased;line-height:1.8}
+  body{background:var(--ink);color:var(--paper);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.8}
+  /* 明朝のまま残す: ロゴ・ブランド・見出し・お題・銀次のセリフ/講評(B案ハイブリッド) */
+  .logo,h2,#latest .l-odai,.ginji .g-body .g-name,.ginji .g-body p,.quote{font-family:var(--mincho)}
   a{color:var(--gold);text-decoration:none}
   .wrap{max-width:680px;margin:0 auto;padding:0 20px}
   /* hero */
   .hero{text-align:center;padding:56px 20px 40px;border-bottom:1px solid var(--line)}
   .logo{font-size:40px;font-weight:700;letter-spacing:.14em}.logo .shu{color:var(--shu-l)}
   .rule{width:120px;height:2px;background:var(--gold);margin:22px auto}
-  .lead{font-size:17px;color:var(--sumi);letter-spacing:.04em;margin:0 auto;max-width:30em}
+  .lead{font-size:17px;font-weight:500;color:var(--sumi);letter-spacing:.04em;margin:0 auto;max-width:30em}
   .define{font-size:14px;color:var(--muted);letter-spacing:.03em;margin:18px auto 0;max-width:34em}
   .cta{display:inline-block;margin-top:28px;padding:14px 30px;background:var(--shu);color:#fff;border-radius:10px;font-size:17px;font-weight:700;letter-spacing:.08em}
   .cta.sub{background:transparent;color:var(--gold);border:1px solid var(--line);padding:12px 24px;font-size:15px;font-weight:400}

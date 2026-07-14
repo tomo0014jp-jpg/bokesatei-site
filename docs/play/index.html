@@ -6,19 +6,25 @@
 <title>AIボケ査定 道場｜大喜利のボケを投稿してAIに査定してもらう</title>
 <meta name="description" content="AIボケ査定の道場。今日の大喜利お題にボケを投稿すると、毒舌AI査定人「辛口の銀次」が0〜100点で採点・講評。無料・登録不要・1日1投稿。">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #14110f; --ink2: #211d1a; --paper: #ece3d3; --sumi: #d8cbb3;
-    --shu: #c0392b; --shu-l: #e0503f; --gold: #cda349; --muted: #8a8073;
+    --shu: #c0392b; --shu-l: #e0503f; --gold: #cda349; --muted: #a49a8a;
     --line: rgba(216, 203, 179, 0.16);
+    --mincho: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     background: var(--ink); color: var(--paper);
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     -webkit-font-smoothing: antialiased; min-height: 100vh;
   }
+  /* 明朝のまま残す: ロゴ・お題・銀次のセリフ/講評(B案ハイブリッド) */
+  .brand .logo, .odai, .ginji, .rk-comment, .me-comment { font-family: var(--mincho); }
   .wrap { max-width: 480px; margin: 0 auto; padding: 16px 16px 48px; }
   header.brand { text-align: center; padding: 10px 0 6px; }
   .brand .logo { font-size: 22px; letter-spacing: 0.18em; font-weight: 700; }
